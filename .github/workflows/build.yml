@@ -25,15 +25,15 @@ jobs:
         with:
           nuget-version: latest
 
-      - name: Set up .NET 🎉
+      - name: Set up .NET
         uses: actions/setup-dotnet@v1
 
-      - name: Restore dependencies 🔎
-        working-directory: /src/CommodityArticle.Api
+      - name: Restore dependencies
+        working-directory: src/CommodityArticle.Api
         run: dotnet restore
 
-      - name: Build with dotnet 💡
-        working-directory: /src/CommodityArticle.Api
+      - name: Build with dotnet
+        working-directory: src/CommodityArticle.Api
         run: dotnet build --configuration Release
 
   test:
