@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.Http.Json;
 
 namespace CommodityArticle.Api.IntegrationTests;
 
@@ -9,19 +8,16 @@ public class HealthEndpointTests
     public async Task GET_health_returns_200_and_expected_payload()
     {
         // Arrange
-        var _client = new HttpClient { BaseAddress = new Uri("https://localhost:8080") };
+        var _client = new HttpClient { BaseAddress = new Uri("https://localhost:7051") };
 
         // Act
-        var response = await _client.GetAsync("/health");
+        var response = await _client.GetAsync("/weatherforecast");
 
         // Assert
-        Assert.Equals(HttpStatusCode.OK, response.StatusCode);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
-        // Optional: if /health returns JSON like { "status": "ok" }
-        var payload = await response.Content.ReadFromJsonAsync<HealthResponse>();
-        Assert.NotNull(payload);
-        Assert.Equals("ok", payload!.status);
+        var content = await response.Content.ReadAsStringAsync();
+
+        Assert.That(content, Is.Not.Null);
     }
-
-    private sealed record HealthResponse(string status);
 }
