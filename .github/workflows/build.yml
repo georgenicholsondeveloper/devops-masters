@@ -71,6 +71,7 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Run container
+        working-directory: src/CommodityArticle.Api
         run: docker run -d --name myapp -p 8080:8080 myapp:ci
 
       - name: Integration Tests
