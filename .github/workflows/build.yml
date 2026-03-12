@@ -45,9 +45,9 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Run tests
-        working-directory: src/tests/CommodityArticle.Api.UnitTests
+        working-directory: src/tests
         run: |
-          dotnet test CommodityArticle.Api.UnitTests.csproj
+          dotnet test CommodityArticle.Api.UnitTests
 
   build-image:
     runs-on: [ubuntu-latest]
