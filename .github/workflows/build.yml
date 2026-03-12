@@ -22,7 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      
       - name: Build image
+        working-directory: \src\CommodityArticle.Api
         run: |
           docker build -t myapp:ci .
