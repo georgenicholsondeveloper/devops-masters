@@ -9,7 +9,7 @@ public class HealthEndpointTests
     public async Task GET_health_returns_200_and_expected_payload()
     {
         // Arrange
-        var _client = new HttpClient { BaseAddress = new Uri("https://localhost:7051") };
+        var _client = new HttpClient { BaseAddress = new Uri("https://localhost:8080") };
 
         // Act
         var response = await _client.GetAsync("/health");
