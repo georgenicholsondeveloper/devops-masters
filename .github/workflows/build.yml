@@ -1,1 +1,44 @@
+name: Build and Test dotnet application
+description: Builds and tests the application using dotnet
 
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+  checks: write
+  actions: write  
+
+jobs:
+  build:
+    runs-on: [ubuntu-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install nuget
+        uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: latest
+
+      - name: Set up .NET 🎉
+        uses: actions/setup-dotnet@v1
+
+      - name: Restore dependencies 🔎
+        run: dotnet restore
+
+      - name: Build with dotnet 💡
+        run: dotnet build --configuration Release
+
+  test:
+    runs-on: [ubuntu-latest]
+    steps:
+    - name: Run tests
+      continue-on-error: false
+      run: |
+        dotnet test
