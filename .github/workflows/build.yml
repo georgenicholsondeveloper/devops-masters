@@ -72,7 +72,7 @@ jobs:
         
       - name: Run container
         working-directory: src/CommodityArticle.Api
-        run: docker run -d --name myapp -p 8080:8080 myapp:ci
+        run: docker run -d --name myapp -p 8080:8080 myapp:ci --help
 
       - name: Integration Tests
         working-directory: src/tests
