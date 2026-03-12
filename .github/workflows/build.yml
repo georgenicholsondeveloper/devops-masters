@@ -43,11 +43,23 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install nuget
+        uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: latest
+          
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v1
+
+      - name: Restore dependencies
+        working-directory: src/CommodityArticle.Api
+        run: dotnet restore
         
       - name: Run Unit Tests
         working-directory: src/tests
         run: |
-          dotnet test CommodityArticle.Api.UnitTests/CommodityArticle.Api.UnitTests.csproj -c Release --no-build
+          dotnet test CommodityArticle.Api.UnitTests -c Release
 
   build-image:
     runs-on: [ubuntu-latest]
