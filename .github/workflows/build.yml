@@ -82,5 +82,5 @@ jobs:
 
       - name: Run Integration Tests
         working-directory: src/tests
-        run: dotnet test --no-build CommodityArticle.Api.IntegrationTests
+        run: dotnet test CommodityArticle.Api.IntegrationTests -c Release
       
