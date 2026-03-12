@@ -47,7 +47,7 @@ jobs:
       - name: Run Unit Tests
         working-directory: src/tests
         run: |
-          dotnet test CommodityArticle.Api.UnitTests  --no-build -c Release
+          dotnet test CommodityArticle.Api.UnitTests -c Release
 
   build-image:
     runs-on: [ubuntu-latest]
