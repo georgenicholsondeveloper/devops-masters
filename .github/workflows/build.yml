@@ -48,3 +48,32 @@ jobs:
         working-directory: src/tests/CommodityArticle.Api.UnitTests
         run: |
           dotnet test CommodityArticle.Api.UnitTests.csproj
+
+  build-image:
+    runs-on: [ubuntu-latest]
+    needs: test
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Build image
+        working-directory: src/CommodityArticle.Api
+        run: |
+          docker build -t myapp:ci .
+
+  integration-tests:
+    runs-on: [ubuntu-latest]
+    needs: build-image
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Run container
+        run: docker run -d --name myapp -p 8080:8080 myapp:ci
+
+      - name: Integration Tests
+        working-directory: src/tests
+        run: dotnet test CommodityArticle.Api.IntegrationTests
+      
