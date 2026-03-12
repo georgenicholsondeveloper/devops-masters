@@ -41,7 +41,6 @@ jobs:
     needs: build
     steps:
     - name: Run tests
-      working-directory: /src/tests/CommodityArticle.Api.UnitTests
-      continue-on-error: false
+      working-directory: src/tests/CommodityArticle.Api.UnitTests
       run: |
         dotnet test
