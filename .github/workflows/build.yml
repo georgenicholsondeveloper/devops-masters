@@ -41,6 +41,5 @@ jobs:
     needs: build
     steps:
     - name: Run tests
-      working-directory: src/tests/CommodityArticle.Api.UnitTests
       run: |
-        dotnet test CommodityArticle.Api.UnitTests.csproj
+        dotnet test src/tests/CommodityArticle.Api.UnitTests/CommodityArticle.Api.UnitTests.csproj
