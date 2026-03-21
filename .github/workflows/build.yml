@@ -104,8 +104,7 @@ jobs:
       - name: Build
         working-directory: src
         run: |
-          dotnet restore
-          dotnet build CommodityArticle.Api/CommodityArticle.Api.csproj --configuration Release --no-restore
+          dotnet build CommodityArticle.Api/CommodityArticle.Api.csproj --configuration Release
 
       - name: Analyze
         uses: github/codeql-action/analyze@v4
