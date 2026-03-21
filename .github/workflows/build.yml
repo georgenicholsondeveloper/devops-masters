@@ -12,6 +12,8 @@ permissions:
   packages: write
   checks: write
   actions: write  
+  security-events: write
+
 
 jobs:
   build-and-run-unit-tests:
@@ -83,4 +85,27 @@ jobs:
       - name: Run Integration Tests
         working-directory: src/tests
         run: dotnet test CommodityArticle.Api.IntegrationTests -c Release
+
+  analyze:
+    name: SAST (CodeQL)
+    runs-on: [ubuntu-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        
+      - name: CodeQL Init
+        uses: github/codeql-action/init@v3
+        with:
+          languages: "csharp"
+
+      - name: Build
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:csharp"
+
+
       
