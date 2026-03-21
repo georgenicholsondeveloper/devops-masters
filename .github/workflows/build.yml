@@ -105,8 +105,8 @@ jobs:
       - name: Build
         run: |
           dotnet restore
-          dotnet build src/App/App.csproj --configuration Release --no-restore
-          dotnet build tests/App.Tests/App.Tests.csproj --configuration Release --no-restore
+          dotnet build src/CommodityArticle.Api/CommodityArticle.Api.csproj --configuration Release --no-restore
+          dotnet build src/tests/CommodityArticle.Api.UnitTests/CommodityArticle.Api.UnitTests.csproj --configuration Release --no-restore
 
 
       - name: Analyze
