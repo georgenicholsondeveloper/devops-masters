@@ -105,6 +105,9 @@ jobs:
         working-directory: src
         run: |
           dotnet build CommodityArticle.Api/CommodityArticle.Api.csproj --configuration Release
+          dotnet build tests/CommodityArticle.Api.UnitTests/CommodityArticle.Api.UnitTests.csproj --configuration Release
+          dotnet build tests/CommodityArticle.Api.IntegrationTests/CommodityArticle.Api.IntegrationTests.csproj --configuration Release
+
 
       - name: Analyze
         uses: github/codeql-action/analyze@v4
