@@ -101,8 +101,13 @@ jobs:
         with:
           languages: "csharp"
 
+     
       - name: Build
-        uses: github/codeql-action/autobuild@v3
+        run: |
+          dotnet restore
+          dotnet build src/App/App.csproj --configuration Release --no-restore
+          dotnet build tests/App.Tests/App.Tests.csproj --configuration Release --no-restore
+
 
       - name: Analyze
         uses: github/codeql-action/analyze@v3
