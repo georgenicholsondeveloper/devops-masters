@@ -4,7 +4,7 @@ description: Builds and tests the application using dotnet
 on:
   push:
     branches:
-      - '**'
+      - [ main ]
   workflow_dispatch:
 
 permissions:
