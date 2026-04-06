@@ -41,7 +41,7 @@ jobs:
 
       - name: Test (with coverage)
         working-directory: src/tests
-        run: dotnet test CommodityArticle.Api.UnitTests -c Release --collect:"XPlat Code Coverage" --logger "trx"
+        run: dotnet test Commodity.Api.UnitTests -c Release --collect:"XPlat Code Coverage" --logger "trx"
 
       - name: End Sonar analysis
         working-directory: src/Commodity.Api
