@@ -33,7 +33,7 @@ jobs:
             /k:"georgenicholsondeveloper_devops-masters" \
             /o:"georgenicholsondeveloper" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.token="${SONAR_TOKEN}"
+            /d:sonar.token="${SONAR_TOKEN}" \
             /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
             /d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx"
 
