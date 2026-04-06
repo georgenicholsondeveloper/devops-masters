@@ -25,7 +25,7 @@ jobs:
         run: dotnet tool install --global dotnet-sonarscanner
 
       - name: Begin Sonar analysis
-        working-directory: src/Commodity.Api
+        working-directory: src
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
@@ -36,15 +36,15 @@ jobs:
             /d:sonar.token="${SONAR_TOKEN}"
 
       - name: Build
-        working-directory: src/Commodity.Api
+        working-directory: src
         run: dotnet build -c Release
 
       - name: Test (with coverage)
-        working-directory: src/tests
+        working-directory: src
         run: dotnet test Commodity.Api.UnitTests -c Release --collect:"XPlat Code Coverage" --logger "trx"
 
       - name: End Sonar analysis
-        working-directory: src/Commodity.Api
+        working-directory: src
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: dotnet sonarscanner end /d:sonar.token="${SONAR_TOKEN}"
