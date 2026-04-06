@@ -35,9 +35,11 @@ jobs:
             /d:sonar.login="${SONAR_TOKEN}"
 
       - name: Build
+        working-directory: src/CommodityArticle.Api
         run: dotnet build -c Release
 
       - name: Test (with coverage)
+        working-directory: src/CommodityArticle.Api
         run: dotnet test -c Release --collect:"XPlat Code Coverage" --logger "trx"
 
       - name: End Sonar analysis
