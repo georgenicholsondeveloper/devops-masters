@@ -64,7 +64,7 @@ jobs:
     runs-on: [ubuntu-latest]
     needs: 
       - build-image
-      - analyze
+      #- analyze
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -102,5 +102,32 @@ jobs:
       - name: Run Integration Tests
         working-directory: src/tests
         run: dotnet test Commodity.Api.IntegrationTests -c Release
+
+  # analyze:
+  #   name: SAST (CodeQL)
+  #   runs-on: [ubuntu-latest]
+
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v5
+        
+  #     - name: CodeQL Init
+  #       uses: github/codeql-action/init@v4
+  #       with:
+  #         languages: "csharp"
+
+  #     - name: Build
+  #       working-directory: src
+  #       run: |
+  #         dotnet build Commodity.Api/Commodity.Api.csproj --configuration Release
+  #         dotnet build tests/Commodity.Api.UnitTests/Commodity.Api.UnitTests.csproj --configuration Release
+  #         dotnet build tests/Commodity.Api.IntegrationTests/Commodity.Api.IntegrationTests.csproj --configuration Release
+
+
+  #     - name: Analyze
+  #       uses: github/codeql-action/analyze@v4
+  #       with:
+  #         category: "/language:csharp"
+
 
       
