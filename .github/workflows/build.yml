@@ -3,8 +3,7 @@ description: Builds and tests the application using dotnet
 
 on:
   push:
-    branches:
-      - [ main ]
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
