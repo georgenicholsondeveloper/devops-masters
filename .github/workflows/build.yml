@@ -81,8 +81,10 @@ jobs:
         run: docker pull ghcr.io/${{ github.repository }}/myapp:ci
 
       - name: Run docker container
-        working-directory: src/CommodityArticle.Api
-        run: docker run -d --name myapp -p 8080:8080 ghcr.io/${{ github.repository }}/myapp:ci
+        working-directory: src     
+        env:
+            GITHUB_REPOSITORY: ${{ github.repository }}
+        run: docker compose -f docker-compose.ci.yml up -d
 
       - name: Run Integration Tests
         working-directory: src/tests
