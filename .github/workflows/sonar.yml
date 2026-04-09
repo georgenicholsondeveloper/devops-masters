@@ -25,7 +25,7 @@ jobs:
         run: dotnet tool install --global dotnet-sonarscanner
 
       - name: Begin Sonar analysis
-        working-directory: src/CommodityArticle.Api
+        working-directory: src
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
@@ -33,18 +33,21 @@ jobs:
             /k:"georgenicholsondeveloper_devops-masters" \
             /o:"georgenicholsondeveloper" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.token="${SONAR_TOKEN}"
+            /d:sonar.token="${SONAR_TOKEN}" \
+            /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
+            /d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx"
+
 
       - name: Build
-        working-directory: src/CommodityArticle.Api
+        working-directory: src
         run: dotnet build -c Release
 
       - name: Test (with coverage)
-        working-directory: src/CommodityArticle.Api
-        run: dotnet test -c Release --collect:"XPlat Code Coverage" --logger "trx"
+        working-directory: src
+        run: dotnet test tests/Commodity.Api.UnitTests -c Release --collect:"XPlat Code Coverage;Format=opencover" --logger "trx"
 
       - name: End Sonar analysis
-        working-directory: src/CommodityArticle.Api
+        working-directory: src
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: dotnet sonarscanner end /d:sonar.token="${SONAR_TOKEN}"

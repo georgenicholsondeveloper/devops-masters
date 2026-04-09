@@ -1,0 +1,30 @@
+
+services:
+  api:
+    build:
+      context: ./Commodity.Api
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "Password123!"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Password123! -C -Q 'SELECT 1' -b"]
+      interval: 5s
+      retries: 3
+      start_period: 10s
+      timeout: 5s
+
+volumes:
+  sqlserver_data:
