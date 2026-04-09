@@ -31,13 +31,13 @@ jobs:
         uses: actions/setup-dotnet@v5
 
       - name: Restore dependencies
-        working-directory: src/CommodityArticle.Api
+        working-directory: src
         run: dotnet restore
         
       - name: Run Unit Tests
         working-directory: src/tests
         run: |
-          dotnet test CommodityArticle.Api.UnitTests -c Release
+          dotnet test Commodity.Api.UnitTests -c Release
 
   build-image:
     runs-on: [ubuntu-latest]
@@ -55,7 +55,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
  
       - name: Build and push Docker image
-        working-directory: src/CommodityArticle.Api
+        working-directory: src/Commodity.Api
         run: |
           docker build -t ghcr.io/${{github.repository}}/myapp:ci .
           docker push ghcr.io/${{ github.repository }}/myapp:ci
@@ -87,7 +87,7 @@ jobs:
 
       - name: Run Integration Tests
         working-directory: src/tests
-        run: dotnet test CommodityArticle.Api.IntegrationTests -c Release
+        run: dotnet test Commodity.Api.IntegrationTests -c Release
 
   analyze:
     name: SAST (CodeQL)
@@ -105,9 +105,9 @@ jobs:
       - name: Build
         working-directory: src
         run: |
-          dotnet build CommodityArticle.Api/CommodityArticle.Api.csproj --configuration Release
-          dotnet build tests/CommodityArticle.Api.UnitTests/CommodityArticle.Api.UnitTests.csproj --configuration Release
-          dotnet build tests/CommodityArticle.Api.IntegrationTests/CommodityArticle.Api.IntegrationTests.csproj --configuration Release
+          dotnet build Commodity.Api/Commodity.Api.csproj --configuration Release
+          dotnet build tests/Commodity.Api.UnitTests/Commodity.Api.UnitTests.csproj --configuration Release
+          dotnet build tests/Commodity.Api.IntegrationTests/Commodity.Api.IntegrationTests.csproj --configuration Release
 
 
       - name: Analyze
