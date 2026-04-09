@@ -83,12 +83,12 @@ jobs:
         working-directory: src     
         env:
             GITHUB_REPOSITORY: ${{ github.repository }}
-        run: docker compose -f docker-compose.ci.yml up -d
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up
 
     
       - name: Wait for API to be healthy
         run: |
-          for i in {1..60}; do
+          for i in {1..30}; do
             if curl -fs http://localhost:8080/; then
               echo "API ready"
               exit 0
@@ -96,7 +96,7 @@ jobs:
             sleep 2
           done
           echo "API not ready in time"
-          exit 0
+          exit 1
 
       - name: Run Integration Tests
         working-directory: src/tests
