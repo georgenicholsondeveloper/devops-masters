@@ -27,10 +27,10 @@ public class IntegrationTests
     }
 
     [Test]
-    public async Task GET_Commodities_Endpoint_Returns_Collection_Of_Commodities()
+    public async Task GET_Commodity_Endpoint_Returns_Collection_Of_Commodities()
     {
         // Act
-        var response = await _client.GetAsync("/api/commodities");
+        var response = await _client.GetAsync("/api/commodity");
 
         // Assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
