@@ -85,6 +85,20 @@ jobs:
             GITHUB_REPOSITORY: ${{ github.repository }}
         run: docker compose -f docker-compose.ci.yml up -d
 
+    
+      - name: Wait for API to be healthy
+        run: |
+          for i in {1..30}; do
+            if curl -fs http://localhost:8080/; then
+              echo "API ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "API not ready in time"
+          docker compose logs
+          exit 1
+
       - name: Run Integration Tests
         working-directory: src/tests
         run: dotnet test Commodity.Api.IntegrationTests -c Release
