@@ -1,0 +1,60 @@
+name: "Plan Terraform"
+description: "Creates and uploads the terraform plan artifact"
+
+inputs:
+  environment:
+    description: "environment (e.g. dev, uat, prod)"
+    required: true
+  plan_type:
+    description: "Type of terraform plan"
+    default: "deployment"
+  major_version_number:
+    description: "Major version number"
+    required: true
+  local_run_number:
+    description: "Local run number for Minor versioning"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_wrapper: false
+
+    - name: Terraform Init
+      working-directory: "terraform"
+      shell: pwsh
+      run: |
+        terraform init -var-file="terraform.tfvars"
+      
+    - name: Terraform Plan
+      working-directory: "terraform"
+      shell: pwsh
+      run: |
+        terraform plan -out=tfplan -var-file="terraform.tfvars"
+        
+    - name: Generate Readable Plan Output
+      working-directory: "terraform"
+      shell: pwsh
+      run: |
+        # Generate human-readable plan
+        terraform show -no-color tfplan > terraform-plan-output.txt
+
+    - name: Add Plan to Step Summary
+      working-directory: "terraform"
+      shell: pwsh
+      run: |
+        # Add to GitHub Actions Summary for deployment plans
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "## 🛠️ Terraform Plan for ${{ inputs.environment }}"
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value ""
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '```terraform'
+        Get-Content terraform-plan-output.txt | Add-Content -Path $env:GITHUB_STEP_SUMMARY
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '```'
+        
+    - name: Upload Terraform Plan
+      uses: actions/upload-artifact@v4
+      with:
+        name: terraform-plan-${{inputs.environment}}.${{ inputs.major_version_number }}.0.${{ inputs.local_run_number }}
+        path: ${{ inputs.workspace }}/terraform/tfplan

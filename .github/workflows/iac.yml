@@ -1,0 +1,28 @@
+name: Deploy Infrastructure via Terraform
+description: Plans and Deploys the Terraform
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  checks: write
+  actions: write  
+  security-events: write
+
+jobs:
+  build-and-run-unit-tests:
+    runs-on: [ubuntu-latest]
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Plan Terraform
+        uses: ./.github/actions/steps/terraform-plan
+        with:
+          environment: 'dev'
+          plan_type: 'pull_request'
+          major_version_number: 1
+          local_run_number: ${{github.run_number}}
