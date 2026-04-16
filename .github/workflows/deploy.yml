@@ -15,6 +15,18 @@ permissions:
 
 
 jobs:
+  smoke-tests:
+    runs-on: [ubuntu-latest]
+    env:
+      BaseUrl: "https://orange-space-barnacle-grrq5w54w62r75-8080.app.github.dev"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Run Functional Smoke Tests
+        working-directory: src/tests
+        run: dotnet test Commodity.Api.SmokeTests -c Release
+
   acceptance-tests:
     runs-on: [ubuntu-latest]
     env:
@@ -26,3 +38,18 @@ jobs:
       - name: Run Acceptance Tests
         working-directory: src/tests
         run: dotnet test Commodity.Api.AcceptanceTests -c Release
+
+  performance-tests:
+    runs-on: [ubuntu-latest]
+    env:
+      BaseUrl: "https://orange-space-barnacle-grrq5w54w62r75-8080.app.github.dev"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install k6
+        run: sudo snap install k6
+
+      - name: Run Performance Tests
+        working-directory: src/tests/Commodity.Api.PerformanceTests
+        run: k6 run performance-tests.js

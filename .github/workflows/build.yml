@@ -81,7 +81,7 @@ jobs:
       - build-image
       - analyze
     env:
-      BASE_URL: http://localhost:8080
+      BaseUrl: http://localhost:8080
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -114,6 +114,10 @@ jobs:
           echo "API not ready in time"
           exit 1
 
+      - name: Run Functional Smoke Tests
+        working-directory: src/tests
+        run: dotnet test Commodity.Api.SmokeTests -c Release
+
       - name: Run Integration Tests
         working-directory: src/tests
         run: dotnet test Commodity.Api.IntegrationTests -c Release
@@ -121,7 +125,7 @@ jobs:
       - name: Install k6
         run: sudo snap install k6
 
-      - name: Run Performance smoke
+      - name: Run Performance Smoke Tests
         working-directory: src/tests/Commodity.Api.PerformanceTests
         run: k6 run performance-smoke-tests.js
 

@@ -11,6 +11,6 @@ export const options = {
 };
 
 export default function () {
-  const res = http.get(`${__ENV.BASE_URL}/`);
+  const res = http.get(`${__ENV.BaseUrl}/`);
   check(res, { 'status is 200': r => r.status === 200 });
 }
