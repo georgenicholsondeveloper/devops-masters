@@ -17,4 +17,10 @@ spec:
         - name: api
           image: ghcr.io/OWNER/REPO/commodity-api:ci
           ports:
-            - containerPort: 8080
+            - containerPort: 8080   
+          env:
+            - name: ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: commodity-api-secrets
+                  key: ConnectionStrings__DefaultConnection
