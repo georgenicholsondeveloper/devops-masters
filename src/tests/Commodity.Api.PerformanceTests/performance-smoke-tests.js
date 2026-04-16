@@ -11,6 +11,6 @@ export const options = {
 };
 
 export default function () {
-  const res = http.get(`${__ENV.BASE_URL}/health`);
+  const res = http.get(`${__ENV.BASE_URL}/`);
   check(res, { 'status is 200': r => r.status === 200 });
 }
