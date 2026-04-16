@@ -19,7 +19,7 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.aks.kube_config[0].cluster_ca_certificate)
 }
 
-resource "azurerm_resource_group" "rg" {
+resource "azurerm_resource_group" "rg_dev" {
   name     = "rg-d-commodity-api"
   location = "francecentral"
 
@@ -37,4 +37,10 @@ resource "azurerm_resource_group" "rg_k8s" {
     Environment = "Development"
     Project     = "Commodity Api"
   }
+}
+
+resource "random_string" "suffix" {
+  length  = 6
+  special = false
+  upper   = false
 }

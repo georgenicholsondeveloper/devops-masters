@@ -3,6 +3,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
   location            = azurerm_resource_group.rg_k8s.location
   resource_group_name = azurerm_resource_group.rg_k8s.name
   dns_prefix          = "commodity-api"
+  
+  oidc_issuer_enabled       = true
+  workload_identity_enabled = true
 
   default_node_pool {
     name       = "system"
