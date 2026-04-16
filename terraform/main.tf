@@ -21,7 +21,17 @@ provider "kubernetes" {
 
 resource "azurerm_resource_group" "rg" {
   name     = "rg-d-commodity-api"
-  location = "West Europe"
+  location = "francecentral"
+
+  tags = {
+    Environment = "Development"
+    Project     = "Commodity Api"
+  }
+}
+
+resource "azurerm_resource_group" "rg_k8s" {
+  name     = "rg-k8s"
+  location = "francecentral"
 
   tags = {
     Environment = "Development"

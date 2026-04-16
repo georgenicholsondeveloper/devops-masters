@@ -54,7 +54,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
  
-      - name: Build and push Docker image
+      - name: Build Docker image
         working-directory: src/Commodity.Api
         run: |
           docker build -t ghcr.io/${{github.repository}}/commodity-api:ci .

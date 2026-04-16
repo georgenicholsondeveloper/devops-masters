@@ -283,3 +283,7 @@ local.settings.json
 # Sensitive variable files
 *.tfvars
 *.tfvars.json
+
+# Kubernetes
+kubeconfig*
+*.kubeconfig
