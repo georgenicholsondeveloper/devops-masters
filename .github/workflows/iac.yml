@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Plan Terraform
-        uses: ./.github/actions/terraform-plan.yml
+        uses: ./.github/actions/terraform-plan
         with:
           environment: 'dev'
           plan_type: 'pull_request'
