@@ -60,7 +60,7 @@ jobs:
           docker build -t ghcr.io/${{github.repository}}/commodity-api:ci .
 
       - name: Scan Image
-        uses: aquasecurity/trivy-action@v0.33.1
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           image-ref: 'ghcr.io/${{github.repository}}/commodity-api:ci'
           format: 'table'
