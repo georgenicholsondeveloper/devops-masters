@@ -16,7 +16,6 @@ permissions:
 
 jobs:
   deploy_dev:
-    needs: build_scan_push
     runs-on: ubuntu-latest
     environment: dev   
     env:
