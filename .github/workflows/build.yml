@@ -60,15 +60,14 @@ jobs:
           docker build -t ghcr.io/${{github.repository}}/commodity-api:ci .
 
       - name: Scan Image
-        uses: aquasecurity/trivy-action@v0.35.0
-        with:
-          image-ref: 'ghcr.io/${{github.repository}}/commodity-api:ci'
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-          version: v0.69.3
+        run: |
+            docker run --rm \
+              -v /var/run/docker.sock:/var/run/docker.sock \
+              aquasec/trivy:v0.69.3 \
+              image \
+              --severity CRITICAL,HIGH \
+              --ignore-unfixed \
+              ghcr.io/${{ github.repository }}/commodity-api:ci
          
       - name: Push Docker Image
         working-directory: src/Commodity.Api
