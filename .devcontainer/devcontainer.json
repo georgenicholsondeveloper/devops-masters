@@ -1,7 +1,11 @@
 {
+  "name": "Terraform + Azure",
   "features": {
     "ghcr.io/devcontainers/features/azure-cli:1": {
       "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/terraform:1": {
+      "version": "1.7.5"
     }
   }
 }

@@ -260,7 +260,6 @@ paket-files/
 __pycache__/
 *.pyc
 /terraform/.terraform
-/terraform/.terraform.lock.hcl
 /terraform/terraform.exe
 /terraform/*.exe
 /*.DotSettings
@@ -271,3 +270,16 @@ __pycache__/
 
 #Local settings
 local.settings.json
+
+
+# Terraform state
+*.tfstate
+*.tfstate.*
+
+# Terraform runtime files
+.terraform/
+.terraform.tfstate.lock.info
+
+# Sensitive variable files
+*.tfvars
+*.tfvars.json
