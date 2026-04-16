@@ -80,6 +80,8 @@ jobs:
     needs: 
       - build-image
       - analyze
+    env:
+      BASE_URL: http://localhost:8080
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -115,6 +117,13 @@ jobs:
       - name: Run Integration Tests
         working-directory: src/tests
         run: dotnet test Commodity.Api.IntegrationTests -c Release
+
+      - name: Install k6
+        run: sudo snap install k6
+
+      - name: Run Performance smoke
+        working-directory: src/tests/Commodity.Api.PerformanceTests
+        run: k6 run performance-smoke-tests.js
 
   analyze:
      name: SAST (CodeQL)
