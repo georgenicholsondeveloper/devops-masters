@@ -18,7 +18,7 @@ public abstract class ApiTestBase
     protected ApiTestBase()
     {
         Configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
+            .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("appsettings.json", optional: false)
             .AddEnvironmentVariables()
             .Build();
