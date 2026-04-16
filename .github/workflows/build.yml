@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Install nuget
-        uses: nuget/setup-nuget@v2
+        uses: nuget/setup-nuget@v3
         with:
           nuget-version: latest
           
@@ -58,6 +58,21 @@ jobs:
         working-directory: src/Commodity.Api
         run: |
           docker build -t ghcr.io/${{github.repository}}/commodity-api:ci .
+
+      - name: Scan Image
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          image-ref: 'ghcr.io/${{github.repository}}/commodity-api:ci'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          version: v0.69.3
+         
+      - name: Push Docker Image
+        working-directory: src/Commodity.Api
+        run: |
           docker push ghcr.io/${{ github.repository }}/commodity-api:ci
 
   integration-tests:
@@ -113,6 +128,7 @@ jobs:
          uses: github/codeql-action/init@v4
          with:
            languages: "csharp"
+           build-mode: manual
 
        - name: Build
          working-directory: src
