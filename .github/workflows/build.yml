@@ -69,7 +69,6 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
           version: v0.69.3
-          trivy-args: --debug
          
       - name: Push Docker Image
         working-directory: src/Commodity.Api
