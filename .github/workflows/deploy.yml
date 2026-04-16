@@ -48,8 +48,8 @@ jobs:
 
       - name: Update image to the new commit SHA
         run: |
-          kubectl -n dev set image deployment/commodity-api api=ghcr.io/${{ github.repository }}/commodity-api:${{ github.sha }}
-          kubectl -n dev rollout status deployment/commodity-api
+          kubectl -n dev set image deployment/commodity-api api=ghcr.io/${{ github.repository }}/commodity-api:ci
+          kubectl -n dev rollout status deployment/commodity-api --timeout=180s
 
 
   smoke-tests:
