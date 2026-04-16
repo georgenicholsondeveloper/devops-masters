@@ -25,4 +25,4 @@ jobs:
         
       - name: Run Acceptance Tests
         working-directory: src/tests
-        run: dotnet test Commodity.Api.IntegrationTests -c Release
+        run: dotnet test Commodity.Api.AcceptanceTests -c Release
