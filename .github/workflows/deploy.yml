@@ -1,0 +1,28 @@
+name: Deploy the application
+description: Deploys the application
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  checks: write
+  actions: write  
+  security-events: write
+
+
+jobs:
+  acceptance-tests:
+    runs-on: [ubuntu-latest]
+    env:
+      BaseUrl: "https://orange-space-barnacle-grrq5w54w62r75-8080.app.github.dev"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        
+      - name: Run Acceptance Tests
+        working-directory: src/tests
+        run: dotnet test Commodity.Api.IntegrationTests -c Release
