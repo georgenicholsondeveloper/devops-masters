@@ -15,7 +15,7 @@ permissions:
 
 
 jobs:
-  deploy_dev:
+  deploy-to-dev:
     runs-on: ubuntu-latest
     environment: dev   
     env:
@@ -33,8 +33,8 @@ jobs:
       - name: Set kubeconfig (from secret)
         shell: bash
         run: |
-          echo "${{ secrets.KUBECONFIG_BASE64 }}" | base64 -d > kubeconfig.yaml
-          echo "KUBECONFIG=$PWD/kubeconfig.yaml" >> $GITHUB_ENV
+          echo "${{ secrets.KUBECONFIG_BASE64 }}" | base64 -d > kubeconfig.yml
+          echo "KUBECONFIG=$PWD/kubeconfig.yml" >> $GITHUB_ENV
 
       - name: Verify cluster access
         run: |
@@ -43,8 +43,8 @@ jobs:
 
       - name: Apply base manifests (idempotent)
         run: |
-          kubectl apply -f k8s/service.yaml
-          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yml
+          kubectl apply -f k8s/deployment.yml
 
       - name: Update image to the new commit SHA
         run: |
@@ -54,6 +54,7 @@ jobs:
 
   smoke-tests:
     runs-on: [ubuntu-latest]
+    needs: deploy-to-dev
     env:
       BaseUrl: "https://super-lamp-7pvq76p5rj7fpx7x-8080.app.github.dev"
     steps:
