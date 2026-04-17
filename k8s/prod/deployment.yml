@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: commodity-api
+  namespace: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: commodity-api
+  template:
+    metadata:
+      labels:
+        app: commodity-api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/OWNER/REPO/commodity-api:ci
+          ports:
+            - containerPort: 8080   
+          env:
+            - name: ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: commodity-db
+                  key: ConnectionStrings__DefaultConnection
