@@ -51,7 +51,7 @@ jobs:
 
       - name: Update image to the new commit SHA
         run: |
-          kubectl -n dev set image deployment/commodity-api api=ghcr.io/${{ github.repository }}/commodity-api:${{ IMAGE_TAG }}
+          kubectl -n dev set image deployment/commodity-api api=ghcr.io/${{ github.repository }}/commodity-api:${{ vars.IMAGE_TAG }}
           kubectl -n dev rollout status deployment/commodity-api --timeout=180s
       
       - name: Apply DB secret
