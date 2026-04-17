@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/OWNER/REPO/commodity-api:${IMAGE_TAG}
+          image: ghcr.io/OWNER/REPO/commodity-api:ci
           ports:
             - containerPort: 8080   
           env:

@@ -44,6 +44,12 @@ jobs:
           kubectl get ns
           kubectl get nodes
 
+      - name: Apply secrets
+        run: |
+          kubectl -n dev create secret generic commodity-db \
+            --from-literal=ConnectionStrings__DefaultConnection="$DB_CONNECTION_STRING" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
       - name: Apply base manifests (idempotent)
         run: |
           kubectl apply -f k8s/service.yml
@@ -53,12 +59,6 @@ jobs:
         run: |
           kubectl -n dev set image deployment/commodity-api api=ghcr.io/${{ github.repository }}/commodity-api:${{ env.IMAGE_TAG }}
           kubectl -n dev rollout status deployment/commodity-api --timeout=180s
-      
-      - name: Apply DB secret
-        run: |
-          kubectl -n uat create secret generic commodity-db \
-            --from-literal=ConnectionStrings__Default="$DB_CONNECTION_STRING" \
-            --dry-run=client -o yaml | kubectl apply -f -
 
   smoke-tests:
     runs-on: [ubuntu-latest]
