@@ -3,11 +3,12 @@ kind: Ingress
 metadata:
   name: commodity-api
   namespace: uat
+  annotations:
+    kubernetes.io/ingress.class: nginx
 spec:
-  ingressClassName: nginx
   rules:
     - host: commodity-api.uat.com
-    - http:
+      http:
         paths:
           - path: /
             pathType: Prefix
@@ -15,4 +16,4 @@ spec:
               service:
                 name: commodity-api
                 port:
-                  number: 80
+                  number: 8080
