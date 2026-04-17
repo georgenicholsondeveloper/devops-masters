@@ -14,11 +14,11 @@ terraform {
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-d-commodity-api"
+  name     = "rg-u-commodity-api"
   location = "francecentral"
 
   tags = {
-    Environment = "dev"
+    Environment = "uat"
     Project     = "Commodity API"
   }
 }

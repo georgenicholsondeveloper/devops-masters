@@ -5,7 +5,7 @@ resource "random_string" "suffix" {
 }
 
 resource "azurerm_mssql_server" "sql" {
-  name                         = "commodity-sql-dev-${random_string.suffix.result}"
+  name                         = "commodity-sql-uat-${random_string.suffix.result}"
   resource_group_name          = azurerm_resource_group.rg.name
   location                     = azurerm_resource_group.rg.location
   version                      = "12.0"
@@ -23,6 +23,14 @@ resource "azurerm_mssql_database" "db" {
 
   sku_name    = "Basic"
   max_size_gb = 2
+}
+
+resource "azurerm_mssql_firewall_rule" "allow_azure_services" {
+  name      = "AllowAzureServices"
+  server_id = azurerm_mssql_server.sql.id
+
+  start_ip_address = "0.0.0.0"
+  end_ip_address   = "0.0.0.0"
 }
 
 output "sql_connection_string" {
