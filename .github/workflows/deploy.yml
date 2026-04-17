@@ -55,6 +55,7 @@ jobs:
         run: |
           kubectl apply -f k8s/${{ env.ENVIRONMENT }}/service.yml
           kubectl apply -f k8s/${{ env.ENVIRONMENT }}/deployment.yml
+          kubectl apply -f k8s/${{ env.ENVIRONMENT }}/ingress.yml
 
       - name: Update image to the new commit SHA
         run: |
@@ -101,6 +102,7 @@ jobs:
         run: |
           kubectl apply -f k8s/${{ env.ENVIRONMENT }}/service.yml
           kubectl apply -f k8s/${{ env.ENVIRONMENT }}/deployment.yml
+          kubectl apply -f k8s/${{ env.ENVIRONMENT }}/ingress.yml
 
       - name: Update image to the new commit SHA
         run: |
