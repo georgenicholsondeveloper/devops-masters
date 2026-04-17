@@ -21,6 +21,8 @@ jobs:
     env:
       REGISTRY: ghcr.io
       IMAGE_NAME: ${{ github.repository }}/commodity-api
+      KUBE_CONFIG: ${{ secrets.KUBECONFIG_BASE64 }}
+      DB_CONNECTION_STRING: ${{ secrets.DATABASE_CONNECTION_STRING }}
     steps:
       - name: Checkout (manifests)
         uses: actions/checkout@v4
@@ -48,9 +50,14 @@ jobs:
 
       - name: Update image to the new commit SHA
         run: |
-          kubectl -n dev set image deployment/commodity-api api=ghcr.io/${{ github.repository }}/commodity-api:ci
+          kubectl -n dev set image deployment/commodity-api api=ghcr.io/${{ github.repository }}/commodity-api:${{github.event.workflow_run.head_sha}}
           kubectl -n dev rollout status deployment/commodity-api --timeout=180s
-
+      
+      - name: Apply DB secret
+        run: |
+          kubectl -n uat create secret generic commodity-db \
+            --from-literal=ConnectionStrings__Default="$DB_CONNECTION_STRING" \
+            --dry-run=client -o yaml | kubectl apply -f -
 
   smoke-tests:
     runs-on: [ubuntu-latest]

@@ -57,12 +57,12 @@ jobs:
       - name: Build Docker image
         working-directory: src/Commodity.Api
         run: |
-          docker build -t ghcr.io/${{github.repository}}/commodity-api:ci .
+          docker build -t ghcr.io/${{github.repository}}/commodity-api:${{github.SHA}} .
 
       - name: Scan Image
         uses: aquasecurity/trivy-action@v0.35.0
         with:
-          image-ref: 'ghcr.io/${{github.repository}}/commodity-api:ci'
+          image-ref: 'ghcr.io/${{github.repository}}/commodity-api:${{github.SHA}}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -73,7 +73,7 @@ jobs:
       - name: Push Docker Image
         working-directory: src/Commodity.Api
         run: |
-          docker push ghcr.io/${{ github.repository }}/commodity-api:ci
+          docker push ghcr.io/${{ github.repository }}/commodity-api:${{ github.SHA }}
 
   integration-tests:
     runs-on: [ubuntu-latest]
@@ -94,7 +94,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull docker image
-        run: docker pull ghcr.io/${{ github.repository }}/commodity-api:ci
+        run: docker pull ghcr.io/${{ github.repository }}/commodity-api:${{github.SHA}}
 
       - name: Run docker container
         working-directory: src     

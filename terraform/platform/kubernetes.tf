@@ -17,15 +17,3 @@ resource "azurerm_kubernetes_cluster" "aks" {
     type = "SystemAssigned"
   }
 }
-
-locals {
-  namespaces = ["dev", "uat", "prod"]
-}
-
-resource "kubernetes_namespace_v1" "env" {
-  for_each = toset(local.namespaces)
-
-  metadata {
-    name = each.value
-  }
-}
