@@ -25,7 +25,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/", () => Results.Ok("The Commodity API is up and running."));
+app.MapGet("/", () => Results.Ok($"The Commodity {builder.Configuration["Environment"]} API is up and running."));
 
 app.MapControllers();
 

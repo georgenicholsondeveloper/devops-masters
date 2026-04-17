@@ -6,7 +6,17 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
 spec:
+  ingressClassName: nginx
   rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: commodity-api
+                port:
+                  number: 80
     - host: commodity-api.prod.com
       http:
         paths:
@@ -16,4 +26,4 @@ spec:
               service:
                 name: commodity-api
                 port:
-                  number: 8080
+                  number: 80

@@ -24,3 +24,5 @@ spec:
                 secretKeyRef:
                   name: commodity-db
                   key: ConnectionStrings__DefaultConnection
+            - name: Environment
+              value: UAT
