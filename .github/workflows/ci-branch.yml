@@ -1,3 +1,6 @@
+name: Continous Integration | Push to branch
+description: Builds and runs Unit tests with dotnet. Builds and runs Integration Tests against docker.
+
 on:
   push:
     branches-ignore: [ main ]
@@ -7,9 +10,7 @@ permissions:
 
 jobs:
   ci:
-    name: Continous Integration | Push to branch
-    description: 
-      Builds and runs Unit tests with dotnet. Builds and runs Integration Tests against docker.
+    name: Build Application and Run Tests
     runs-on: [ubuntu-latest]
     env:
       BaseUrl: http://localhost:8080
