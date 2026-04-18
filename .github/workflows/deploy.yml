@@ -62,8 +62,54 @@ jobs:
           kubectl -n ${{ env.ENVIRONMENT }} set image deployment/commodity-api api=ghcr.io/${{ github.repository }}/commodity-api:${{ env.IMAGE_TAG }}
           kubectl -n ${{ env.ENVIRONMENT }} rollout status deployment/commodity-api --timeout=180s
 
+  smoke-tests:
+    runs-on: [ubuntu-latest]
+    needs: deploy-to-dev
+    env:
+      BaseUrl: "http://20.74.10.95"
+      ApiHostName: "commodity-api.dev.com"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Run Functional Smoke Tests
+        working-directory: src/tests
+        run: dotnet test Commodity.Api.SmokeTests -c Release
+
+  acceptance-tests:
+    runs-on: [ubuntu-latest]
+    needs: smoke-tests
+    env:
+      BaseUrl: "http://20.74.10.95"
+      ApiHostName: "commodity-api.dev.com"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        
+      - name: Run Acceptance Tests
+        working-directory: src/tests
+        run: dotnet test Commodity.Api.AcceptanceTests -c Release
+
+  performance-tests:
+    runs-on: [ubuntu-latest]
+    needs: acceptance-tests
+    env:
+      BaseUrl: "http://20.74.10.95"
+      ApiHostName: "commodity-api.dev.com"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install k6
+        run: sudo snap install k6
+
+      - name: Run Performance Tests
+        working-directory: src/tests/Commodity.Api.PerformanceTests
+        run: k6 run performance-tests.js
+
   deploy-to-uat:
     runs-on: ubuntu-latest
+    needs: performance-tests
     environment: uat   
     env:
       REGISTRY: ghcr.io
@@ -111,6 +157,7 @@ jobs:
 
   deploy-to-prod:
     runs-on: ubuntu-latest
+    needs: deploy-to-uat
     environment: prod   
     env:
       REGISTRY: ghcr.io
@@ -155,45 +202,3 @@ jobs:
         run: |
           kubectl -n ${{ env.ENVIRONMENT }} set image deployment/commodity-api api=ghcr.io/${{ github.repository }}/commodity-api:${{ env.IMAGE_TAG }}
           kubectl -n ${{ env.ENVIRONMENT }} rollout status deployment/commodity-api --timeout=180s
-
-  smoke-tests:
-    runs-on: [ubuntu-latest]
-    needs: deploy-to-dev
-    env:
-      BaseUrl: "http://20.74.10.95"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Run Functional Smoke Tests
-        working-directory: src/tests
-        run: dotnet test Commodity.Api.SmokeTests -c Release
-
-  acceptance-tests:
-    runs-on: [ubuntu-latest]
-    needs: smoke-tests
-    env:
-      BaseUrl: "http://20.74.10.95"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-        
-      - name: Run Acceptance Tests
-        working-directory: src/tests
-        run: dotnet test Commodity.Api.AcceptanceTests -c Release
-
-  performance-tests:
-    runs-on: [ubuntu-latest]
-    needs: acceptance-tests
-    env:
-      BaseUrl: "http://20.74.10.95"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Install k6
-        run: sudo snap install k6
-
-      - name: Run Performance Tests
-        working-directory: src/tests/Commodity.Api.PerformanceTests
-        run: k6 run performance-tests.js

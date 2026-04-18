@@ -1,8 +1,7 @@
 using System.Net;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using RestSharp;
 
 namespace Commodity.Api.SmokeTests;
 
@@ -12,10 +11,18 @@ public class SmokeTests : ApiTestBase
     [Test]
     public async Task GetDefaultEndpoint_Returns_SuccessMessage()
     {
-        var getResponse = await Request.GetAsync("/");
-        var healthMessage = await getResponse.JsonAsync<string>();
+        // Arrange
+        var request = new RestRequest("/", Method.Get);
+        
+        // Add Host header for nginx ingress routing
+        request.AddHeader("Host", HostName);
+        request.AddHeader("Accept", "application/json");
 
-        Assert.That(getResponse.Status, Is.EqualTo((int)HttpStatusCode.OK));
-        Assert.That(healthMessage, Is.EqualTo("The Commodity API is up and running."));
+        // Act
+        var response = await Client.ExecuteAsync<string>(request);
+
+        // Assert
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(response.Data, Is.EqualTo($"The Commodity {Configuration["Environment"]} API is up and running."));
     }
 }

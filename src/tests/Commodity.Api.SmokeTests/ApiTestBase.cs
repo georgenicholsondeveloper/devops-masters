@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Playwright;
+using RestSharp;
 using NUnit.Framework;
 using Microsoft.Extensions.Configuration;
 
@@ -9,11 +7,8 @@ namespace Commodity.Api.SmokeTests;
 
 public abstract class ApiTestBase
 {
-    protected IPlaywright Playwright = null!;
-    protected IAPIRequestContext Request = null!;
-
-    
- protected readonly IConfiguration Configuration;
+    protected RestClient Client = null!;
+    protected readonly IConfiguration Configuration;
 
     protected ApiTestBase()
     {
@@ -27,27 +22,23 @@ public abstract class ApiTestBase
     protected string BaseUrl =>
         Configuration["BaseUrl"] ?? "http://localhost:8080";
 
-    [OneTimeSetUp]
-    public async Task OneTimeSetUp()
-    {
-        Playwright = await Microsoft.Playwright.Playwright.CreateAsync();
+    protected string HostName =>
+        Configuration["ApiHostName"] ?? "localhost";
 
-        Request = await Playwright.APIRequest.NewContextAsync(new()
+    [OneTimeSetUp]
+    public void OneTimeSetUp()
+    {
+        var options = new RestClientOptions(BaseUrl)
         {
-            BaseURL = BaseUrl,
-            ExtraHTTPHeaders = new Dictionary<string, string>
-            {
-                ["Accept"] = "application/json"
-            }
-        });
+            ThrowOnAnyError = false
+        };
+
+        Client = new RestClient(options);
     }
 
     [OneTimeTearDown]
-    public async Task OneTimeTearDown()
+    public void OneTimeTearDown()
     {
-        if (Request is not null)
-            await Request.DisposeAsync();
-
-        Playwright?.Dispose();
+        Client?.Dispose();
     }
 }

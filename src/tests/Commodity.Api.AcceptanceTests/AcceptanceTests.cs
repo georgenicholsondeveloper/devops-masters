@@ -1,8 +1,8 @@
 using System.Net;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using RestSharp;
 using Commodity.Api.DTOs;
 using Commodity.Api.Models;
 
@@ -22,33 +22,34 @@ public class CommodityApiAcceptanceTests : ApiTestBase
             Category = "Metal"
         };
 
-        // Act
-        var createHttpResponse = await Request.PostAsync("/api/commodity", new()
-        {
-            DataObject = payload
-        });
-
-        // Assert
-        Assert.That(createHttpResponse.Status, Is.EqualTo((int)HttpStatusCode.Created));
-
-        var createdJsonResponse = await createHttpResponse.TextAsync();
-
-        var createResponse = JsonSerializer.Deserialize<CommodityModel>(createdJsonResponse);
-
-        var createdId = createResponse!.Id;
-
-        Assert.NotNull(createdId);
+        var createRequest = new RestRequest("/api/commodity", Method.Post);
+        
+        // Add Host header for nginx ingress routing
+        createRequest.AddHeader("Host", HostName);
+        createRequest.AddHeader("Accept", "application/json");
+        createRequest.AddJsonBody(payload);
 
         // Act
-        var getResponse = await Request.GetAsync($"/api/commodity/{createdId}");
+        var createResponse = await Client.ExecuteAsync<CommodityModel>(createRequest);
 
         // Assert
-        Assert.That(getResponse.Status, Is.EqualTo((int)HttpStatusCode.OK));
+        Assert.That(createResponse.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+        Assert.That(createResponse.Data, Is.Not.Null);
+        
+        var createdId = createResponse.Data!.Id;
+        Assert.That(createdId, Is.Not.Null);
 
-        var retrievedJsonResponse = await getResponse.TextAsync();
+        // Arrange GET request
+        var getRequest = new RestRequest($"/api/commodity/{createdId}", Method.Get);
+        getRequest.AddHeader("Host", HostName);
+        getRequest.AddHeader("Accept", "application/json");
 
-        var retrieveResponse = JsonSerializer.Deserialize<CommodityModel>(retrievedJsonResponse);
+        // Act
+        var getResponse = await Client.ExecuteAsync<CommodityModel>(getRequest);
 
-        Assert.That(retrieveResponse!.Name, Is.EqualTo("Gold"));
+        // Assert
+        Assert.That(getResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(getResponse.Data, Is.Not.Null);
+        Assert.That(getResponse.Data!.Name, Is.EqualTo("Gold"));
     }
 }
