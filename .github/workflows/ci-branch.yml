@@ -1,6 +1,3 @@
-name: Continous Integration | Push to branch
-description: Builds and runs Unit tests with dotnet. Builds and runs Integration Tests against docker.
-
 on:
   push:
     branches-ignore: [ main ]
@@ -10,7 +7,9 @@ permissions:
 
 jobs:
   ci:
-    name: Build Application and Run Tests
+    name: Continous Integration | Push to branch
+    description: 
+      Builds and runs Unit tests with dotnet. Builds and runs Integration Tests against docker.
     runs-on: [ubuntu-latest]
     env:
       BaseUrl: http://localhost:8080
@@ -49,10 +48,6 @@ jobs:
             GITHUB_REPOSITORY: ${{ github.repository }}
             GITHUB_SHA: ${{ github.sha }}
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
-
-      - name: Show final compose config (debug)
-        working-directory: src
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml config
       
       - name: Wait for API to be healthy
         working-directory: src
