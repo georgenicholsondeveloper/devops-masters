@@ -6,6 +6,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    healthcheck:
+          test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+          interval: 5s
+          timeout: 2s
+          retries: 20
     depends_on:
       db:
         condition: service_healthy

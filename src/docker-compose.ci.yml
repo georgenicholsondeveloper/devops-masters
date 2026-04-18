@@ -1,4 +1,3 @@
-
 services:
-  api: 
-    image: ghcr.io/${GITHUB_REPOSITORY}/myapp:ci
+  api:
+    image: ghcr.io/${{ github.repository }}/commodity-api:${{ github.sha }}

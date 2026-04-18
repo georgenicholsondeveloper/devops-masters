@@ -27,6 +27,8 @@ app.UseHttpsRedirection();
 
 app.MapGet("/", () => Results.Ok($"The Commodity {builder.Configuration["Environment"]} API is up and running."));
 
+app.MapGet("/health", () => Results.Ok());
+
 app.MapControllers();
 
 app.Run();
