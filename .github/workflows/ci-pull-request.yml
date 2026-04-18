@@ -1,0 +1,73 @@
+name: Continuous Integration | Pull Request
+description: Runs the Comprehensive CI Suite: Build & Test, SAST, Docker Compose and Push Image
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  sast-sonar:
+    name: SAST (Sonar Qube)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Install SonarScanner for .NET
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Begin Sonar analysis
+        working-directory: src
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          dotnet sonarscanner begin \
+            /k:"georgenicholsondeveloper_devops-masters" \
+            /o:"georgenicholsondeveloper" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.token="${SONAR_TOKEN}" \
+            /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
+            /d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx"
+
+      - name: Build
+        working-directory: src
+        run: dotnet build -c Release
+
+      - name: Test (with coverage)
+        working-directory: src
+        run: dotnet test tests/Commodity.Api.UnitTests -c Release --collect:"XPlat Code Coverage;Format=opencover" --logger "trx"
+
+      - name: End Sonar analysis
+        working-directory: src
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: dotnet sonarscanner end /d:sonar.token="${SONAR_TOKEN}"
+
+  sast-codeql:
+     name: SAST (CodeQL)
+     runs-on: [ubuntu-latest]
+     steps:
+       - name: Checkout
+         uses: actions/checkout@v5
+        
+       - name: CodeQL Init
+         uses: github/codeql-action/init@v4
+         with:
+           languages: "csharp"
+           build-mode: manual
+
+       - name: Build
+         working-directory: src
+         run: dotnet build -c Release
+
+       - name: Analyze
+         uses: github/codeql-action/analyze@v4
+         with:
+           category: "/language:csharp"
