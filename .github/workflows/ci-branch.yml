@@ -6,7 +6,7 @@ on:
     branches-ignore: [ main ]
 
 permissions:
-  contents: ready
+  contents: read
   checks: write
   actions: write  
   security-events: write
