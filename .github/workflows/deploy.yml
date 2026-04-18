@@ -68,6 +68,7 @@ jobs:
     env:
       BaseUrl: "http://20.74.10.95"
       ApiHostName: "commodity-api.dev.com"
+      Environment: 'Dev'
     steps:
       - name: Checkout
         uses: actions/checkout@v5
