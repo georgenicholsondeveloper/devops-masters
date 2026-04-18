@@ -1,3 +1,4 @@
 services:
   api:
     image: ghcr.io/${GITHUB_REPOSITORY}/commodity-api:${GITHUB_SHA}
+    build: !reset null

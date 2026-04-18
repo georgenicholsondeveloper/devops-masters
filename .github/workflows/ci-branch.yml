@@ -7,9 +7,6 @@ on:
 
 permissions:
   contents: read
-  checks: write
-  actions: write  
-  security-events: write
 
 jobs:
   ci:
@@ -29,6 +26,10 @@ jobs:
           
       - name: Set up .NET
         uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x
+          cache: true
+          cache-dependency-path: src/**/*.csproj.
 
       - name: Restore dependencies
         working-directory: src
@@ -37,14 +38,14 @@ jobs:
       - name: Run Unit Tests
         working-directory: src/tests
         run: |
-          dotnet test Commodity.Api.UnitTests -c Release
+          dotnet test Commodity.Api.UnitTests -c Release --no-restore
 
       - name: Build Docker Image
         working-directory: src/Commodity.Api
         run: |
           docker build -t ghcr.io/${{github.repository}}/commodity-api:${{github.SHA}} .
 
-      - name: Run docker container
+      - name: Run Docker Container
         working-directory: src       
         env:
             GITHUB_REPOSITORY: ${{ github.repository }}
@@ -55,7 +56,7 @@ jobs:
         working-directory: src
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml config
       
-      - name: Wait for API container health
+      - name: Wait for API to be healthy
         working-directory: src
         run: |
           for i in {1..30}; do
@@ -72,9 +73,14 @@ jobs:
 
       - name: Run Integration Tests
         working-directory: src/tests
-        run: dotnet test Commodity.Api.IntegrationTests -c Release
+        run: dotnet test Commodity.Api.IntegrationTests -c Release --no-restore
+
+      - name: Post Compose logs on failure
+        if: failure()
+        working-directory: src
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs --no-color
       
-      - name: Tear down
+      - name: Tear down Compose
         if: always()
         working-directory: src
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
