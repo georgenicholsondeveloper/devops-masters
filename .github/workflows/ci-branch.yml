@@ -67,7 +67,7 @@ jobs:
         working-directory: src       
         env:
             GITHUB_REPOSITORY: ${{ github.repository }}
-            GITHUB_SHA: ${{ github.sha }
+            GITHUB_SHA: ${{ github.sha }}
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
       
       - name: Wait for API container health
