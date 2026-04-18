@@ -11,6 +11,16 @@ export const options = {
 };
 
 export default function () {
-  const res = http.get(`${__ENV.BaseUrl}/`);
+  const baseUrl = __ENV.BaseUrl || 'http://localhost:8080';
+  const hostName = __ENV.ApiHostName || 'localhost';
+  
+  const params = {
+    headers: {
+      'Host': hostName,
+      'Accept': 'application/json',
+    },
+  };
+  
+  const res = http.get(`${baseUrl}/`, params);
   check(res, { 'status is 200': r => r.status === 200 });
 }
