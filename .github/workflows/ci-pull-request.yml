@@ -65,7 +65,7 @@ jobs:
 
        - name: Build
          working-directory: src
-         run: dotnet build -c Release
+         run: dotnet build commodity-api.sln -c Release
 
        - name: Analyze
          uses: github/codeql-action/analyze@v4
