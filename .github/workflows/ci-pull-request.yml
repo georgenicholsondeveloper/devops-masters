@@ -1,5 +1,5 @@
 name: Continuous Integration | Pull Request
-description: Runs the Comprehensive CI Suite: Build & Test, SAST, Docker Compose and Push Image
+description: Runs the Comprehensive CI Suite | Build & Test, SAST, Docker Compose and Push Image
 
 on:
   pull_request:
