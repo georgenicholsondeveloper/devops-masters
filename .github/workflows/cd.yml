@@ -114,7 +114,7 @@ jobs:
           docker push ghcr.io/${{ github.repository }}/commodity-api:${{ github.SHA }}
 
   deploy-to-dev:
-    name: DEV | Deploy
+    name: Dev | Deploy
     runs-on: ubuntu-latest
     environment: dev   
     needs: build-test-and-push-image
