@@ -114,7 +114,7 @@ jobs:
           docker push ghcr.io/${{ github.repository }}/commodity-api:${{ github.SHA }}
 
   deploy-to-dev:
-    name: Deploy | Dev
+    name: DEV | Deploy
     runs-on: ubuntu-latest
     environment: dev   
     needs: build-test-and-push-image
@@ -162,8 +162,8 @@ jobs:
           kubectl -n ${{ env.ENVIRONMENT }} set image deployment/commodity-api api=ghcr.io/${{ github.repository }}/commodity-api:${{ env.IMAGE_TAG }}
           kubectl -n ${{ env.ENVIRONMENT }} rollout status deployment/commodity-api --timeout=180s
 
-  dev-smoke-tests:
-    name: Smoke Tests | Dev
+  dev-tests:
+    name: Dev | Smoke, Acceptance and Performance Tests
     runs-on: [ubuntu-latest]
     needs: deploy-to-dev
     env:
@@ -177,32 +177,10 @@ jobs:
       - name: Run Functional Smoke Tests
         working-directory: src/tests
         run: dotnet test Commodity.Api.SmokeTests -c Release
-
-  acceptance-tests:
-    name: Acceptance Tests | Dev
-    runs-on: [ubuntu-latest]
-    needs: dev-smoke-tests
-    env:
-      BaseUrl: "http://20.74.10.95"
-      ApiHostName: "commodity-api.dev.com"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
         
       - name: Run Acceptance Tests
         working-directory: src/tests
         run: dotnet test Commodity.Api.AcceptanceTests -c Release
-
-  performance-tests:
-    name: Performance Tests | Dev
-    runs-on: [ubuntu-latest]
-    needs: acceptance-tests
-    env:
-      BaseUrl: "http://20.74.10.95"
-      ApiHostName: "commodity-api.dev.com"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
 
       - name: Install k6
         run: sudo snap install k6
@@ -212,9 +190,9 @@ jobs:
         run: k6 run performance-tests.js
 
   deploy-to-uat:
-    name: Deploy | UAT
+    name: UAT | Deploy
     runs-on: ubuntu-latest
-    needs: performance-tests
+    needs: dev-tests
     environment: uat   
     env:
       REGISTRY: ghcr.io
@@ -260,8 +238,8 @@ jobs:
           kubectl -n ${{ env.ENVIRONMENT }} set image deployment/commodity-api api=ghcr.io/${{ github.repository }}/commodity-api:${{ env.IMAGE_TAG }}
           kubectl -n ${{ env.ENVIRONMENT }} rollout status deployment/commodity-api --timeout=180s
 
-  uat-smoke-tests:
-    name: Smoke Tests | UAT
+  uat-tests:
+    name: UAT | Smoke Tests
     runs-on: [ubuntu-latest]
     needs: deploy-to-uat
     env:
@@ -277,9 +255,9 @@ jobs:
         run: dotnet test Commodity.Api.SmokeTests -c Release
 
   deploy-to-prod:
-    name: Deploy | Prod
+    name: Prod | Deploy
     runs-on: ubuntu-latest
-    needs: uat-smoke-tests
+    needs: uat-tests
     environment: prod   
     env:
       REGISTRY: ghcr.io
@@ -325,8 +303,8 @@ jobs:
           kubectl -n ${{ env.ENVIRONMENT }} set image deployment/commodity-api api=ghcr.io/${{ github.repository }}/commodity-api:${{ env.IMAGE_TAG }}
           kubectl -n ${{ env.ENVIRONMENT }} rollout status deployment/commodity-api --timeout=180s
 
-  prod-smoke-tests:
-    name: Smoke Tests | Prod
+  prod-tests:
+    name: Prod | Smoke Tests
     runs-on: [ubuntu-latest]
     needs: deploy-to-prod
     env:

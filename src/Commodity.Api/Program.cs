@@ -29,6 +29,8 @@ app.MapGet("/", () => Results.Ok($"The Commodity {builder.Configuration["Environ
 
 app.MapGet("/health", () => Results.Ok());
 
+app.MapGet("/info", () => Results.Ok("The Commodity API allows commodity data to be managed."));
+
 app.MapControllers();
 
 app.Run();
