@@ -101,12 +101,20 @@ jobs:
         working-directory: src
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
 
+      - name: Login to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Push Docker Image
         working-directory: src/Commodity.Api
         run: |
           docker push ghcr.io/${{ github.repository }}/commodity-api:${{ github.SHA }}
 
   deploy-to-dev:
+    name: Deploy | Dev
     runs-on: ubuntu-latest
     environment: dev   
     needs: build-test-and-push-image
@@ -155,6 +163,7 @@ jobs:
           kubectl -n ${{ env.ENVIRONMENT }} rollout status deployment/commodity-api --timeout=180s
 
   dev-smoke-tests:
+    name: Smoke Tests | Dev
     runs-on: [ubuntu-latest]
     needs: deploy-to-dev
     env:
@@ -170,6 +179,7 @@ jobs:
         run: dotnet test Commodity.Api.SmokeTests -c Release
 
   acceptance-tests:
+    name: Acceptance Tests | Dev
     runs-on: [ubuntu-latest]
     needs: dev-smoke-tests
     env:
@@ -184,6 +194,7 @@ jobs:
         run: dotnet test Commodity.Api.AcceptanceTests -c Release
 
   performance-tests:
+    name: Performance Tests | Dev
     runs-on: [ubuntu-latest]
     needs: acceptance-tests
     env:
@@ -201,6 +212,7 @@ jobs:
         run: k6 run performance-tests.js
 
   deploy-to-uat:
+    name: Deploy | UAT
     runs-on: ubuntu-latest
     needs: performance-tests
     environment: uat   
@@ -249,6 +261,7 @@ jobs:
           kubectl -n ${{ env.ENVIRONMENT }} rollout status deployment/commodity-api --timeout=180s
 
   uat-smoke-tests:
+    name: Smoke Tests | UAT
     runs-on: [ubuntu-latest]
     needs: deploy-to-uat
     env:
@@ -264,6 +277,7 @@ jobs:
         run: dotnet test Commodity.Api.SmokeTests -c Release
 
   deploy-to-prod:
+    name: Deploy | Prod
     runs-on: ubuntu-latest
     needs: uat-smoke-tests
     environment: prod   
@@ -312,6 +326,7 @@ jobs:
           kubectl -n ${{ env.ENVIRONMENT }} rollout status deployment/commodity-api --timeout=180s
 
   prod-smoke-tests:
+    name: Smoke Tests | Prod
     runs-on: [ubuntu-latest]
     needs: deploy-to-prod
     env:
