@@ -11,6 +11,7 @@ permissions:
 jobs:
   ci:
     name: Build Application and Run Tests
+    if: ${{ github.event_name == 'push' && !github.event.pull_request }}
     runs-on: [ubuntu-latest]
     env:
       BaseUrl: http://localhost:8080

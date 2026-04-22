@@ -1,7 +1,9 @@
-name: Deploy the application
-description: Deploys the application
+name: Continuous Deployment
+description: Deploys the application through DEV, UAT and PROD.
 
 on:
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -11,11 +13,103 @@ permissions:
   actions: write  
   security-events: write
 
-
 jobs:
+  build-test-and-push-image:
+    name: Build, Test and Push Docker Image
+    runs-on: [ubuntu-latest]
+    env:
+      BaseUrl: http://localhost:8080
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install nuget
+        uses: nuget/setup-nuget@v3
+        with:
+          nuget-version: latest
+          
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore dependencies
+        working-directory: src
+        run: dotnet restore
+        
+      - name: Run Unit Tests
+        working-directory: src/tests
+        run: |
+          dotnet test Commodity.Api.UnitTests -c Release --no-restore
+
+      - name: Build Docker Image
+        working-directory: src/Commodity.Api
+        run: |
+          docker build -t ghcr.io/${{github.repository}}/commodity-api:${{github.SHA}} .
+
+      - name: Scan Image
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          image-ref: 'ghcr.io/${{github.repository}}/commodity-api:${{github.SHA}}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          version: v0.69.3
+
+      - name: Run Docker Container
+        working-directory: src       
+        env:
+            GITHUB_REPOSITORY: ${{ github.repository }}
+            GITHUB_SHA: ${{ github.sha }}
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
+      
+      - name: Wait for API to be healthy
+        working-directory: src
+        run: |
+          for i in {1..30}; do
+            if docker compose ps --status=running --status=healthy | grep api; then
+              echo "API is healthy"
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "API did not become healthy"
+          docker compose ps
+          exit 1
+
+      - name: Run Integration Tests
+        working-directory: src/tests
+        run: dotnet test Commodity.Api.IntegrationTests -c Release
+
+      - name: Install k6
+        run: sudo snap install k6
+
+      - name: Run Performance Smoke Tests
+        working-directory: src/tests/Commodity.Api.PerformanceTests
+        run: k6 run performance-smoke-tests.js
+
+      - name: Post Compose logs on failure
+        if: failure()
+        working-directory: src
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs --no-color
+      
+      - name: Tear down Compose
+        if: always()
+        working-directory: src
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+
+      - name: Push Docker Image
+        working-directory: src/Commodity.Api
+        run: |
+          docker push ghcr.io/${{ github.repository }}/commodity-api:${{ github.SHA }}
+
   deploy-to-dev:
     runs-on: ubuntu-latest
     environment: dev   
+    needs: build-test-and-push-image
     env:
       REGISTRY: ghcr.io
       IMAGE_NAME: ${{ github.repository }}/commodity-api
@@ -32,7 +126,7 @@ jobs:
         with:
           version: latest
 
-      - name: Set KUBECONFIG
+      - name: Set kubeconfig
         shell: bash
         run: |
           echo "${{ secrets.KUBECONFIG_BASE64 }}" | base64 -d > kubeconfig.yml

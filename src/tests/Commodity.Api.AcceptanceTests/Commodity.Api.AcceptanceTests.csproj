@@ -16,11 +16,6 @@
   </None>
 </ItemGroup>
 
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Commodity.Api\Commodity.Api.csproj" />
-  </ItemGroup>
-
   <ItemGroup>
     <Using Include="NUnit.Framework" />
   </ItemGroup>
