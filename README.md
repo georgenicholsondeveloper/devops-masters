@@ -1,2 +1,2 @@
-# devops-masters
-A repository for the devops masters project.
+# Devops Masters
+Stores and deploys the Commodity API via CI/CD - utilising Docker and Kubernetes.
