@@ -15,6 +15,7 @@ permissions:
   actions: write  
   security-events: write
 
+jobs:
   sast-sonar:
     name: SAST (SonarQube)
     runs-on: ubuntu-latest
