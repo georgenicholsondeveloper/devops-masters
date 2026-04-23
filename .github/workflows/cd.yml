@@ -87,12 +87,11 @@ jobs:
         working-directory: src/tests
         run: dotnet test Commodity.Api.IntegrationTests -c Release
 
-      - name: Install k6
-        run: sudo snap install k6
-
       - name: Run Performance Smoke Tests
         working-directory: src/tests/Commodity.Api.PerformanceTests
-        run: k6 run performance-smoke-tests.js
+        run: |
+          sudo snap install k6
+          k6 run performance-smoke-tests.js
 
       - name: Post Compose logs on failure
         if: failure()
@@ -185,12 +184,11 @@ jobs:
         working-directory: src/tests
         run: dotnet test Commodity.Api.AcceptanceTests -c Release
 
-      - name: Install k6
-        run: sudo snap install k6
-
       - name: Run Performance Tests
         working-directory: src/tests/Commodity.Api.PerformanceTests
-        run: k6 run performance-tests.js
+        run: |
+          sudo snap install k6
+          k6 run performance-smoke-tests.js
 
   deploy-to-uat:
     name: UAT | Deploy
