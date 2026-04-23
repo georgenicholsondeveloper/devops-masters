@@ -1,29 +1,32 @@
 name: Continuous Integration
-description: Build & Test with dotnet. Build and Test Docker. Trivy scan + k6 performance tests.
+description: Builds and runs Unit tests with dotnet. Builds and runs Integration Tests against docker.
 
 on:
-  push:
-    branches-ignore: [ main ]
-    paths-ignore:
-      - 'terraform/**'
-      - '.github/**'
-  pull_request:
-    types: [ opened, synchronize, reopened ]
-    paths-ignore:
-      - 'terraform/**'
-      - '.github/**'
+  workflow_call:
+    inputs:
+      run_trivy:
+        description: "Run Trivy vulnerability scan"
+        type: boolean
+        default: false
+      run_k6:
+        description: "Run k6 performance smoke tests"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
-  checks: write
-  actions: write  
 
 jobs:
   ci:
     name: Build Application and Run Tests
-    runs-on: [ubuntu-latest]
+    runs-on: ubuntu-latest
+
     env:
       BaseUrl: http://localhost:8080
+      IMAGE_REF: ghcr.io/${{ github.repository }}/commodity-api:${{ github.sha }}
+      GITHUB_REPOSITORY: ${{ github.repository }}
+      GITHUB_SHA: ${{ github.sha }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -32,7 +35,7 @@ jobs:
         uses: nuget/setup-nuget@v3
         with:
           nuget-version: latest
-          
+
       - name: Set up .NET
         uses: actions/setup-dotnet@v5
         with:
@@ -41,41 +44,36 @@ jobs:
       - name: Restore dependencies
         working-directory: src
         run: dotnet restore
-        
+
       - name: Run Unit Tests
         working-directory: src/tests
-        run: |
-          dotnet test Commodity.Api.UnitTests -c Release --no-restore
+        run: dotnet test Commodity.Api.UnitTests -c Release --no-restore
 
       - name: Build Docker Image
         working-directory: src/Commodity.Api
-        run: |
-          docker build -t ghcr.io/${{github.repository}}/commodity-api:${{github.SHA}} .
+        run: docker build -t "${IMAGE_REF}" .
 
-      - name: Scan Image
-        if: github.event_name == 'pull_request'
+      - name: Scan Image (Trivy)
+        if: ${{ inputs.run_trivy }}
         uses: aquasecurity/trivy-action@v0.35.0
         with:
-          image-ref: 'ghcr.io/${{github.repository}}/commodity-api:${{github.SHA}}'
-          format: 'table'
-          exit-code: '1'
+          image-ref: ${{ env.IMAGE_REF }}
+          format: table
+          exit-code: "1"
           ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
+          vuln-type: "os,library"
+          severity: "CRITICAL,HIGH"
           version: v0.69.3
 
       - name: Run Docker Container
-        working-directory: src       
-        env:
-            GITHUB_REPOSITORY: ${{ github.repository }}
-            GITHUB_SHA: ${{ github.sha }}
+        working-directory: src
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
-      
+
       - name: Wait for API to be healthy
         working-directory: src
         run: |
           for i in {1..30}; do
-            if docker compose ps --status=running --status=healthy | grep api; then
+            if docker compose ps --status=running --status=healthy | grep -q api; then
               echo "API is healthy"
               exit 0
             fi
@@ -88,14 +86,14 @@ jobs:
 
       - name: Run Integration Tests
         working-directory: src/tests
-        run: dotnet test Commodity.Api.IntegrationTests -c Release
+        run: dotnet test Commodity.Api.IntegrationTests -c Release --no-restore
 
       - name: Install k6
-        if: github.event_name == 'pull_request'
+        if: ${{ inputs.run_k6 }}
         run: sudo snap install k6
 
       - name: Run Performance Smoke Tests
-        if: github.event_name == 'pull_request'
+        if: ${{ inputs.run_k6 }}
         working-directory: src/tests/Commodity.Api.PerformanceTests
         run: k6 run performance-smoke-tests.js
 
@@ -103,7 +101,7 @@ jobs:
         if: failure()
         working-directory: src
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs --no-color
-      
+
       - name: Tear down Compose
         if: always()
         working-directory: src
