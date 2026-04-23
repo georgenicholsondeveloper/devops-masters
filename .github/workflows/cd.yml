@@ -4,6 +4,8 @@ description: Deploys the application through DEV, UAT and PROD.
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'terraform/**'
   workflow_dispatch:
 
 permissions:

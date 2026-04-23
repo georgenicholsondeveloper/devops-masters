@@ -4,6 +4,8 @@ description: Runs the Comprehensive CI Suite | Build & Test, SAST, Docker Compos
 on:
   pull_request:
     types: [ opened, synchronize, reopened ]
+    paths-ignore:
+      - 'terraform/**'
 
 permissions:
   contents: read

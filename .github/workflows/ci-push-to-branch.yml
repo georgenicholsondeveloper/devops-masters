@@ -4,6 +4,8 @@ description: Builds and runs Unit tests with dotnet. Builds and runs Integration
 on:
   push:
     branches-ignore: [ main ]
+    paths-ignore:
+      - 'terraform/**'
 
 permissions:
   contents: read
