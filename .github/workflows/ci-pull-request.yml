@@ -104,7 +104,7 @@ jobs:
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
 
   sast-sonar:
-    name: SAST (Sonar Qube)
+    name: SAST (SonarQube)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
