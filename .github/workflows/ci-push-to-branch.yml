@@ -6,6 +6,7 @@ on:
     branches-ignore: [ main ]
     paths-ignore:
       - 'terraform/**'
+      - '.github/**'
 
 permissions:
   contents: read
