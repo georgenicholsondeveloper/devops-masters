@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: CI Base
 description: Builds and runs Unit tests with dotnet. Builds and runs Integration Tests against docker.
 
 on:
