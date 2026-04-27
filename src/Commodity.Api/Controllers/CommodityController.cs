@@ -65,7 +65,7 @@ public class CommodityController(ICommodityService commodityService) : Controlle
     }
 
     [HttpGet("count")]
-    public async Task<IActionResult> GetCommoditiesCountAs(){
+    public async Task<IActionResult> GetCommoditiesCount(){
         var count = await _commodityService.GetCommoditiesCountAsync();
         return Ok($"Count of commodities: {count}");
     }
