@@ -69,4 +69,9 @@ public class CommodityService(CommodityDbContext context) : ICommodityService
         
         return true;
     }
+
+    public async Task<int> GetCommoditiesCountAsync(){
+        var commodities = await _context.Commodities.ToListAsync();
+        return commodities.Count;
+    }
 }
