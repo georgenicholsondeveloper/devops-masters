@@ -1,9 +1,9 @@
-name: Continuous Integration
-description: Build & Test with dotnet. Scan, Performance + Integration Tests against Docker Container.
+name: Continuous Integration on Feature
+description: Build & Test with dotnet.
 
 on:
-  pull_request:
-    types: [ opened, synchronize, reopened ]
+  push:
+    branches-ignore: [ main ]
     paths-ignore:
       - 'terraform/**'
       - '.github/**'
@@ -16,6 +16,7 @@ permissions:
 jobs:
   ci:
     name: Build and Test
+    if: github.event.pull_request == null
     runs-on: [ubuntu-latest]
     env:
       BaseUrl: http://localhost:8080
@@ -47,17 +48,6 @@ jobs:
         run: |
           docker build -t ghcr.io/${{github.repository}}/commodity-api:${{github.SHA}} .
 
-      - name: Scan Image
-        uses: aquasecurity/trivy-action@v0.35.0
-        with:
-          image-ref: 'ghcr.io/${{github.repository}}/commodity-api:${{github.SHA}}'
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-          version: v0.69.3
-
       - name: Run Docker Container
         working-directory: src       
         env:
@@ -83,12 +73,6 @@ jobs:
       - name: Run Integration Tests
         working-directory: src/tests
         run: dotnet test Commodity.Api.IntegrationTests -c Release
-
-      - name: Run Performance Smoke Tests
-        working-directory: src/tests/Commodity.Api.PerformanceTests
-        run: |
-          sudo snap install k6
-          k6 run performance-smoke-tests.js
 
       - name: Post Compose logs (On Failure)
         if: failure()
