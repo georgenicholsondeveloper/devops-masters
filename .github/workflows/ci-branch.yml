@@ -1,4 +1,4 @@
-name: Continuous Integration on Feature
+name: Continuous Integration for Feature Push
 description: Build & Test with dotnet.
 
 on:
@@ -6,7 +6,7 @@ on:
     branches-ignore: [ main ]
     paths-ignore:
       - 'terraform/**'
-      - '.github/**'
+      - '.github/**
 
 permissions:
   contents: read
