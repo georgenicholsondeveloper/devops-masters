@@ -72,7 +72,7 @@ public class CommodityService(CommodityDbContext context) : ICommodityService
 
     public async Task<int> GetCommoditiesCountAsync(){
 
-        //INTENTIONALLY VERBOSE TO INCREASE LINE COUNT FOR SONARQUBE
+        //INTENTIONALLY VERBOSE TO INCREASE LINE COUNT FOR SONARQUBE.
 
         var commodities = await _context.Commodities.ToListAsync();
 
