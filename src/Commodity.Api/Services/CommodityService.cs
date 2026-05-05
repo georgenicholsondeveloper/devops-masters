@@ -69,4 +69,36 @@ public class CommodityService(CommodityDbContext context) : ICommodityService
         
         return true;
     }
+
+    public async Task<int> GetCommoditiesCountAsync()
+    {
+        var commodities = await _context.Commodities.ToListAsync();
+
+        var commodityCounter = 0;
+
+        var failedCommodityCounter = 0;
+
+        foreach(var commodity in commodities)
+        {
+            if(commodity == null)
+            {
+                failedCommodityCounter++;
+                continue;
+            }
+
+            Console.WriteLine("I am retrieving and counting commodities");
+
+            commodityCounter++;
+
+            Console.WriteLine("Commodities increased by 1");
+
+            Console.WriteLine("Reporting Failed Commodities");
+
+            if(failedCommodityCounter < 1){
+                Console.WriteLine("No commodities failed");
+            }
+        }
+
+        return commodities.Count;
+    }    
 }
