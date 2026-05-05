@@ -10,4 +10,5 @@ public interface ICommodityService
     Task<CommodityModel> CreateCommodityAsync(CreateCommodityDto dto);
     Task<CommodityModel?> UpdateCommodityAsync(int id, UpdateCommodityDto dto);
     Task<bool> DeleteCommodityAsync(int id);
+    Task<int> GetCommoditiesCountAsync();
 }
